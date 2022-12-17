@@ -39,4 +39,4 @@ RScript data_transformation.R
 
 # Results
 
--   Random Forest prooved to be the best model and reached AUC = 0.78 on training dataset
+-   Random Forest proved to be the best model and reached AUC = 0.78 on training dataset
