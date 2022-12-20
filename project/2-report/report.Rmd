@@ -1,0 +1,95 @@
+---
+title: "Exploratory Analysis"
+author: "MA"
+date: "20/12/2022"
+output:
+  html_document:
+    keep_md: true
+---
+
+Used libraries
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+```{r message=FALSE, warning=FALSE, cache=TRUE}
+df <- read_csv("C:/Users/admin/Downloads/Drive Data/train_data.csv")
+```
+
+Train data dimensions:
+
+```{r}
+dim(df[2:18])
+```
+
+Train data variable summary
+
+```{r}
+summary(df[2:18]) %>%
+  kable()
+```
+
+```{r message=FALSE, warning=FALSE, cache=TRUE}
+df$loan_purpose <- as.factor(df$loan_purpose)
+df$y <- as.factor(df$y)
+```
+
+Summary of character variable - Loan purpose
+
+```{r}
+df %>%
+  group_by(loan_purpose) %>%
+  summarise(n = n())  %>%
+  arrange(desc(n)) %>%
+  kable()
+```
+
+```{r message=FALSE, warning=FALSE}
+df %>%
+  group_by(y, loan_purpose) %>%
+  summarise(n = n()) %>%
+  ggplot(aes(fill=y, y=n, x=loan_purpose)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  coord_flip() +
+  scale_y_continuous(labels = scales::comma) +
+  theme_dark()
+```
+
+Main reasons for taking out a loan:
+
+```{r message=FALSE, warning=FALSE}
+df %>%
+  filter(y == 1) %>%
+  group_by(loan_purpose) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  head(10) %>%
+  kable()
+```
+
+The number of missing values in each column
+
+```{r message=FALSE, warning=FALSE}
+na_count <- colSums(is.na(df), na.rm = TRUE)
+na_count[na_count > 0]
+```
+
+Graphs about Loan purpose for further analysis
+
+```{r message=FALSE, warning=FALSE}
+library(DT)
+df %>%
+  group_by(y, loan_purpose) %>%
+  summarise(n = n()) %>%
+  datatable()
+```
+
+```{r message=FALSE, warning=FALSE}
+library(plotly)
+df %>%
+  group_by(y, credit_score) %>%
+  summarise(n = n()) %>%
+  plot_ly(x = ~credit_score, y = ~n, name = ~y, type = "bar")
+```
